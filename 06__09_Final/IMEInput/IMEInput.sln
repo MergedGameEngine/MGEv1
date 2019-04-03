@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IMEInput", "IMEInput.vcproj", "{36A6DE55-5344-4E3D-8E7B-174A61C2597D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A31B32F8-94B8-4367-877B-EBE90FEC5C79} = {A31B32F8-94B8-4367-877B-EBE90FEC5C79}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Joystick", "Joystick\Joystick.vcproj", "{A31B32F8-94B8-4367-877B-EBE90FEC5C79}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{36A6DE55-5344-4E3D-8E7B-174A61C2597D}.Debug.ActiveCfg = Debug|Win32
+		{36A6DE55-5344-4E3D-8E7B-174A61C2597D}.Debug.Build.0 = Debug|Win32
+		{36A6DE55-5344-4E3D-8E7B-174A61C2597D}.Release.ActiveCfg = Release|Win32
+		{36A6DE55-5344-4E3D-8E7B-174A61C2597D}.Release.Build.0 = Release|Win32
+		{A31B32F8-94B8-4367-877B-EBE90FEC5C79}.Debug.ActiveCfg = Debug|Win32
+		{A31B32F8-94B8-4367-877B-EBE90FEC5C79}.Debug.Build.0 = Debug|Win32
+		{A31B32F8-94B8-4367-877B-EBE90FEC5C79}.Release.ActiveCfg = Release|Win32
+		{A31B32F8-94B8-4367-877B-EBE90FEC5C79}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

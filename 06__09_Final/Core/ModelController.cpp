@@ -1,0 +1,152 @@
+///////////////////////////////////////////////////////////////////
+//
+//		Merged GameEngine (MGE)		Copyright 2009
+//		All Rights Reserved
+//		Author:		chen. Wang,
+//
+///////////////////////////////////////////////////////////////////
+
+#define _CORE_EXPORT
+
+#define _MATHTOOL_IMPORT
+#define _BASE_IMPORT
+#define _FILE_IMPORT
+#define _MODEL_IMPORT
+#define _THREAD_IMPORT
+#define _RENDERER_IMPORT
+
+#include "string.h"
+#include "../Base/Type.h"
+#include "../Base/Base.h"
+#define _ARRAY_API _CORE_API
+#include "ModelController.hpp"
+
+#include "BaseImport.h"
+#include "MathToolImport.h"
+#include "FileImport.h"
+#include "ModelImport.h"
+#include "RendererImport.h"
+
+_CORE_API TModelController::TModelController() {
+	animationController = NULL;
+	modelPrototype = NULL;
+	renderMeshUnit = NULL;
+	renderTextureUnit = NULL;
+	subModelControllers.Resize(0);
+	numBoneMatrices = 0;
+
+	directionAngle = 0;
+}
+_CORE_API TModelController::~TModelController() {
+	animationController = NULL;
+	modelPrototype = NULL;
+	renderMeshUnit = NULL;
+	renderTextureUnit = NULL;
+	subModelControllers.Resize(0);
+}
+char _CORE_API *TModelController::GetClassName() {
+	return "TModelController";
+}
+int _CORE_API TModelController::GetClassCode() {
+	return CLSID_TModelController;
+}
+int _CORE_API TModelController::GetHashCode() {
+	return 1;
+}
+BOOL32 _CORE_API TModelController::IsInstanceof(const char* className) {
+	if (strcmp("TModelController", className)) {
+		return TRUE;
+	}
+	return TEventListener::IsInstanceof(className);
+}
+BOOL32 _CORE_API TModelController::IsEqualto(IObject &obj) {
+	return FALSE;
+}
+void _CORE_API TModelController::Serialize(IIOStream &iio) {
+}
+void _CORE_API TModelController::Wait() {
+}
+void _CORE_API TModelController::Notify() {
+}
+
+void _CORE_API TModelController::LinkBoneMatrices() {
+	TModel *mdlink = &animationController->boneController;
+	TMeshController *mc = renderMeshUnit;
+	unsigned int numeshes = mdlink->GetNumMeshes();
+	for ( unsigned int i2 = 0 ; i2 < numeshes ; i2 ++ ) {
+		TMeshObject *mo = (TMeshObject*)mc->meshIndices.Get(mdlink->GetMeshes()[i2].GetName());
+		TMesh *m = &mdlink->GetMeshes()[i2];
+		if ( mo != NULL ) {
+			TArray<Matrix44f> &bm = m->GetBoneMatrices();
+			if ( bm.GetLength() != numBoneMatrices ) {
+				bm.Resize(numBoneMatrices);
+			}
+			TRefArray<TBoneTreeNode> &btns = m->GetBoneNodes();
+			unsigned int unumbones = btns.GetLength();
+			for ( unsigned int i7 = 0 ; i7 < unumbones ; i7 ++ ) {
+				Transform &trat = btns[i7].GetFastTransform();
+				bm[i7] = Matrix44f(trat.translation, trat.rotation);
+			}
+			//TSkin *s = &modelPrototype->GetMeshes()[i2].GetSkins()[0];
+			//if ( s != NULL ) {
+			//	unsigned short unumbones = s->GetNumBones();
+			//	unsigned short *bmap = (unsigned short *)(s->GetBones().GetBuffer());
+			//	TRefArray<TBoneTreeNode> &btns = m->GetBoneNodes();
+			//	for ( unsigned int i7 = 0 ; i7 < unumbones ; i7 ++ ) {
+			//		Transform &trat = btns[bmap[i7]].GetFastTransform();
+			//		Matrix44f mat(trat.translation, trat.rotation);
+			//		bm[i7] = mat;
+			//	}
+			//}
+			if ( numBoneMatrices > 0 ) {
+				mo->SetBoneMatrices((Matrix44f*)bm.GetBuffer(), numBoneMatrices);
+			}
+		}
+	}
+}
+
+
+void _CORE_API TModelController::EventHandler(TEvent &e) {
+	if ( e.subject != NULL ) {
+		if ( e.subject->IsInstanceof("TModelController") ) {
+			TModelController *subject = (TModelController*)e.subject;
+			if (subject->uid == uid) {
+				return;
+			}
+			switch (e.actionCode) {
+				case 1://attack
+					{
+						Vector3f attackvec = position - subject->position;
+						if ( attackvec.Magnitude() < 3 ) {
+							position = position + attackvec.Normalized();
+							printf( " The uid = %d Charactor has been attacked by the uid = %d Charactor.\n" , uid , subject->uid );
+						} else {
+							position = position - attackvec.Normalized() * 0.3f;
+							printf( " The uid = %d Charactor wanna beat the uid = %d Charactor.\n" , uid , subject->uid );
+						}
+					}
+					break;
+				default:
+					{
+					}
+					break;
+			}
+		}
+	}
+}
+
+void _CORE_API TModelController::RotationAxisZ(float angle) {
+	directionAngle += angle;
+	direction.fromEuler(0.0f, 0.0f, directionAngle);
+}
+
+void _CORE_API TModelController::Velocity(float delta) {
+	Vector3f dir(1.0f, 0.0f, 0.0f);
+	velocity = direction * dir * delta;
+	position = positionCurrent + velocity;
+}
+
+void _CORE_API TModelController::Commit() {
+	positionCurrent = position;
+}
+
